@@ -96,7 +96,7 @@ voice:
   activation: pushtotalk      # wakeword, pushtotalk, always
   push_to_talk_key: f9
   quit_key: ctrl+alt+q
-  conversation_timeout: 4     # Auto-listen seconds after response
+  conversation_timeout: 0     # 0 = disabled, set >0 for auto-listen after response
   wake_words: [sentinel, centinela]
   wakeword_model: tiny
   input_device: null

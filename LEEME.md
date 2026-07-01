@@ -93,7 +93,7 @@ voice:
   activation: pushtotalk      # wakeword, pushtotalk, always
   push_to_talk_key: f9
   quit_key: ctrl+alt+q
-  conversation_timeout: 4     # Segundos de auto-escucha tras respuesta
+  conversation_timeout: 0     # 0 = desactivado, pon >0 para auto-escucha tras respuesta
   wake_words: [sentinel, centinela]
   wakeword_model: tiny
   input_device: null
