@@ -265,6 +265,8 @@ Edit or add `.md` files to teach Sentinel new skills — **no code changes neede
 | ⚡ Groq | `GROQ_API_KEY` | Ultra-fast inference |
 | 🌐 Google | `GOOGLE_API_KEY` | Gemini models |
 | 🔀 OpenRouter | `OPENROUTER_API_KEY` | Access to 200+ models |
+| 🎯 MiniMax | `MINIMAX_API_KEY` | Budget-friendly alternative |
+| 💻 OpenCode | `OPENCODE_API_KEY` | Code-specialized API |
 
 ---
 
@@ -570,6 +572,8 @@ Edita o añade `.md` para enseñarle cosas nuevas — **sin tocar código**.
 | ⚡ Groq | `GROQ_API_KEY` | Inferencia ultrarrápida |
 | 🌐 Google | `GOOGLE_API_KEY` | Modelos Gemini |
 | 🔀 OpenRouter | `OPENROUTER_API_KEY` | Acceso a +200 modelos |
+| 🎯 MiniMax | `MINIMAX_API_KEY` | Alternativa económica |
+| 💻 OpenCode | `OPENCODE_API_KEY` | API especializada en código |
 
 ---
 
