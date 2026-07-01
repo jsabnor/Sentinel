@@ -43,17 +43,11 @@ voice:
   enabled: true
 
   # User profile: child, standard, expert
-  # child = simplified language, restricted actions, extra safety
-  # standard = full features, voice guidance
-  # expert = minimal chatter, maximum autonomy
   profile: standard
 
   # Audio devices (index or name). List with: python main.py --list-audio
-  # Audio devices. Set null to use Windows system defaults.
-  # First configure defaults in Windows: Sound Settings > Input/Output
-  # Run: python main.py --list-audio  to see available devices
-  input_device: null           # Usar microfono por defecto de Windows
-  output_device: null           # Speakers (null = system default)
+  input_device: null
+  output_device: null
 
   stt:
     engine: whisper
@@ -77,10 +71,10 @@ voice:
   wake_words:
     - centinela
     - sentinel
-    - hey sentinel
   push_to_talk_key: f9
   quit_key: ctrl+alt+q
-  conversation_timeout: 4       # Seconds to auto-listen for follow-up after response (0 = disabled)
+  conversation_timeout: 0       # 0 = disabled, auto-listen after response wastes tokens
+  quit_key: ctrl+alt+q
 
 safety:
   default_mode: auto
