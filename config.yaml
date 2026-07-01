@@ -74,7 +74,6 @@ voice:
   push_to_talk_key: f9
   quit_key: ctrl+alt+q
   conversation_timeout: 0       # 0 = disabled, auto-listen after response wastes tokens
-  quit_key: ctrl+alt+q
 
 safety:
   default_mode: auto
