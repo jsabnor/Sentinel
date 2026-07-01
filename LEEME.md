@@ -110,17 +110,17 @@ python main.py --list-sessions # 📂 Ver sesiones guardadas
 
 | Tecla | Acción |
 |-------|--------|
-| `F9` | Empezar / parar grabación (configurable en `config.yaml`) |
+| `F9` | Mantén pulsado para grabar, suelta para enviar (configurable en `config.yaml`) |
 | `Ctrl+Alt+Q` | Salir de Sentinel en cualquier momento |
 
 **Flujo de uso típico:**
 
-1. Pulsa `F9` → Sentinel te escucha 🟢
-2. Di tu comando, por ejemplo: *"Abre el navegador y ve a Gmail"*
-3. Pulsa `F9` otra vez → Sentinel procesa tu petición
+1. Mantén pulsado `F9` → Sentinel empieza a grabar 🟢
+2. Sin soltar, di tu comando: *"Abre el navegador y ve a Gmail"*
+3. Suelta `F9` → Sentinel procesa tu petición
 4. Sentinel ejecuta la acción y te responde por voz 🔊
 
-> 💡 *No hace falta mantener pulsada la tecla. Pulsas una vez para empezar, pulsas otra vez para enviar.*
+> 💡 *Mantén la tecla pulsada mientras hablas. Al soltarla, Sentinel procesa tu mensaje automáticamente.*
 
 ### 💬 Comandos del chat
 

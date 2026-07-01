@@ -3,7 +3,7 @@ Sentinel - Background Mode (no console)
 ========================================
 Double-click or run: pythonw sentinelw.pyw
 
-Shows a status indicator top-right. Press Ctrl+Alt+S to speak.
+Shows a status indicator top-right. Hold F9 to speak, release to send.
 Press Ctrl+Alt+Q to quit. Voice responses play through speakers.
 """
 

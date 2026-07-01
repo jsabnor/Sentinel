@@ -111,10 +111,10 @@ python main.py --list-sessions # 📂 List saved sessions
 
 | Key | Action |
 |-----|--------|
-| `F9` | Start/stop recording (configurable) |
+| `F9` | Hold to record, release to send (configurable) |
 | `Ctrl+Alt+Q` | Quit Sentinel |
 
-**How it works:** Press `F9` → speak your command → press `F9` again → Sentinel processes and responds by voice.
+**How it works:** Hold `F9` → speak your command → release → Sentinel processes and responds by voice.
 
 #### 💬 Chat mode commands
 
@@ -421,10 +421,10 @@ python main.py --list-sessions # 📂 Ver sesiones guardadas
 
 | Tecla | Acción |
 |-------|--------|
-| `F9` | Empezar/parar grabación (configurable) |
+| `F9` | Mantén pulsado para grabar, suelta para enviar (configurable) |
 | `Ctrl+Alt+Q` | Salir de Sentinel |
 
-**Cómo funciona:** Pulsa `F9` → habla tu comando → pulsa `F9` otra vez → Sentinel procesa y responde por voz.
+**Cómo funciona:** Mantén pulsado `F9` → habla tu comando → suelta → Sentinel procesa y responde por voz.
 
 #### 💬 Comandos del chat
 
