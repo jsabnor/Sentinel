@@ -1,0 +1,48 @@
+# Sentinel - AI OS Agent
+# Voice-controlled AI agent for complete OS management
+
+# === Core ===
+pyyaml>=6.0
+python-dotenv>=1.0
+rich>=13.0
+pydantic>=2.0
+colorama>=0.4
+
+# === LLM Providers ===
+openai>=1.30.0
+anthropic>=0.30.0
+groq>=0.9.0
+google-generativeai>=0.7.0
+
+# === Voice ===
+SpeechRecognition>=3.10
+pyttsx3>=2.90
+pyaudio>=0.2
+vosk>=0.3
+
+# Whisper (local STT, offline)
+openai-whisper>=20231117
+
+# Piper TTS (local neural TTS, offline)
+piper-tts>=1.2
+
+# === Desktop Automation ===
+pyautogui>=0.9
+pygetwindow>=0.0.9
+pynput>=1.7
+pillow>=10.0
+opencv-python>=4.8
+numpy>=1.24
+mss>=9.0
+
+# === System ===
+psutil>=5.9
+pywin32>=306; sys_platform == 'win32'
+
+# === Audio ===
+sounddevice>=0.4
+soundfile>=0.12
+
+# === Utils ===
+keyboard>=0.13
+mouse>=0.7

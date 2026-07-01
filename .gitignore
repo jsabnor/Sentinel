@@ -1,0 +1,45 @@
+# Secrets & environment
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Screenshots (contain desktop captures)
+sentinel_screenshots/
+
+# Session data (conversation history)
+sessions/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# OS artifacts
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Large model files (downloadable by installer)
+models/piper/
+*.onnx
