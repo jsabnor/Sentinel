@@ -32,38 +32,68 @@ No mouse. No keyboard. No screen required. **You speak. Sentinel acts.**
 
 ### ⚡ Quick Install
 
+The fastest way — **one command does it all**:
+
 ```bash
 git clone https://github.com/jsabnor/sentinel.git
 cd sentinel
 python install.py
 ```
 
-The interactive installer walks you through:
-1. 📦 Python dependencies
-2. 🧠 LLM provider & API key
-3. 🎤 Voice config — Whisper model + TTS engine
-4. ⬇️ Downloads Whisper (offline STT) and Piper voice (optional)
-5. 🔐 Permissions & wake word setup
-6. 📝 Generates `.env` + `config.yaml`
-7. 🪟 **Optional: Windows background service** (auto-start)
+### 🧙 What the installer does for you
 
-Then just run:
+`install.py` is a complete guided setup. It will NEVER leave you with a half-configured project:
+
+| Step | What happens |
+|------|-------------|
+| 1. 📦 | **Python dependencies** — installs everything from `requirements.txt` via pip |
+| 2. 🧠 | **LLM provider** — choose DeepSeek, OpenAI, Ollama, etc. Paste your API key |
+| 3. 🎤 | **Voice setup** — pick Whisper model size (`tiny` to `large`) and TTS engine (pyttsx3, Piper, Edge) |
+| 4. ⬇️ | **Downloads Whisper** — offline speech recognition (~150 MB `base`, ~500 MB `small`) |
+| 5. 🗣️ | **Downloads Piper voice** — optional neural Spanish/English voice (~30 MB) |
+| 6. 🔐 | **Permissions** — set safety mode (`auto` / `ask` / `deny`), configure wake words |
+| 7. 📝 | **Creates config** — generates `.env` + `config.yaml` ready to use |
+| 8. 🪟 | **Windows service** — optional: install Sentinel as a background service that auto-starts on login |
+
+### 🚀 After install
 
 ```bash
-start_sentinel.bat        # Windows
-# or auto-starts on login if you chose the service option
+start_sentinel.bat        # Windows — starts immediately
 ```
+
+Or if you installed the service — it launches automatically every time you log in. **You never need to touch a terminal again.**
 
 > 🏠 **Voice is 100% local.** Whisper for speech recognition, Piper/pyttsx3 for TTS.  
 > No cloud voice APIs. Only the LLM needs internet — or none at all with Ollama.
 
-Manual install:
+### 📦 Manual install (alternative)
 
 ```bash
 pip install -r requirements.txt
-# Create .env with your API key → use .env.example as template
+# Copy .env.example to .env and add your API key
 # Edit config.yaml to your liking
+python main.py
 ```
+
+---
+
+### 🪟 Background Service — Install once, run forever
+
+The installer offers to set up Sentinel as a **Windows background service**. If you accept:
+
+- ✅ Sentinel starts **automatically** every time you log into Windows
+- ✅ No console window — just a 🟢 **green icon** in the system tray
+- ✅ `F9` push-to-talk works **globally**, from any application
+- ✅ `Ctrl+Alt+Q` quits the service when needed
+- ✅ Voice responses play through your speakers
+
+| OS | Install command | Start | Stop |
+|----|----------------|-------|------|
+| 🪟 **Windows** | `powershell -File install_service.ps1` | `start_sentinel.bat` or auto | `stop_sentinel.bat` or `Ctrl+Alt+Q` |
+| 🐧 **Linux** | `bash install_service.sh` | Auto (systemd) | `systemctl --user stop sentinel` |
+| 🍏 **macOS** | `bash install_service.sh` | Auto (launchd) | `launchctl unload ~/Library/LaunchAgents/com.sentinel.agent.plist` |
+
+> 💡 **Tip:** You can install the service later by running the command above, or by re-running `python install.py` and answering "Yes" to the service question.
 
 ---
 
@@ -180,24 +210,6 @@ logging:
 | `window_minimize` | Minimize | *"Minimize this window"* |
 | `session_list` | Session history | *"Show my sessions"* |
 | `session_load` | Resume session | *"Restore my last session"* |
-
----
-
-### 🪟 Background Service (No Console Window)
-
-Run Sentinel invisibly as a system tray service — accessible from any app with a global hotkey:
-
-| OS | Install | Start | Stop |
-|----|---------|-------|------|
-| 🪟 **Windows** | `powershell -File install_service.ps1` | `start_sentinel.bat` | `stop_sentinel.bat` or `Ctrl+Alt+Q` |
-| 🐧 **Linux** | `bash install_service.sh` | Auto (systemd) | `systemctl --user stop sentinel` |
-| 🍏 **macOS** | `bash install_service.sh` | Auto (launchd) | `launchctl unload ~/Library/LaunchAgents/com.sentinel.agent.plist` |
-
-When running as a service:
-- 🟢 Green tray icon — Sentinel is ready
-- 🎤 `F9` works globally from any window
-- ❌ `Ctrl+Alt+Q` to quit
-- 🔊 Voice responses through speakers
 
 ---
 
@@ -330,30 +342,68 @@ Sin ratón. Sin teclado. Sin pantalla. **Tú hablas. Sentinel actúa.**
 
 ### ⚡ Instalación Rápida
 
+La forma más rápida — **un solo comando lo hace todo**:
+
 ```bash
 git clone https://github.com/jsabnor/sentinel.git
 cd sentinel
 python install.py
 ```
 
-El instalador interactivo te guía paso a paso:
-1. 📦 Dependencias Python
-2. 🧠 Proveedor LLM y API key
-3. 🎤 Configuración de voz — modelo Whisper + motor TTS
-4. ⬇️ Descarga de Whisper (STT offline) y voz Piper (opcional)
-5. 🔐 Configuración de permisos
-6. 📝 Genera `.env` + `config.yaml`
-7. 🪟 **Servicio en segundo plano** (auto-inicio con Windows)
+### 🧙 Lo que hace el instalador por ti
 
-Después solo ejecuta:
+`install.py` es una experiencia guiada completa. NUNCA te deja con una configuración a medias:
+
+| Paso | Qué ocurre |
+|------|-----------|
+| 1. 📦 | **Dependencias Python** — instala todo desde `requirements.txt` vía pip |
+| 2. 🧠 | **Proveedor LLM** — elige DeepSeek, OpenAI, Ollama... Pega tu API key |
+| 3. 🎤 | **Configuración de voz** — elige tamaño de Whisper (`tiny` a `large`) y motor TTS (pyttsx3, Piper, Edge) |
+| 4. ⬇️ | **Descarga Whisper** — reconocimiento de voz offline (~150 MB `base`, ~500 MB `small`) |
+| 5. 🗣️ | **Descarga voz Piper** — voz neuronal en español/inglés opcional (~30 MB) |
+| 6. 🔐 | **Permisos** — configura modo de seguridad (`auto` / `ask` / `deny`) y palabras de activación |
+| 7. 📝 | **Crea configuración** — genera `.env` + `config.yaml` listos para usar |
+| 8. 🪟 | **Servicio Windows** — opcional: instala Sentinel como servicio que arranca solo al iniciar sesión |
+
+### 🚀 Después de instalar
 
 ```bash
-start_sentinel.bat        # Windows
-# o inicia automáticamente si elegiste el servicio
+start_sentinel.bat        # Windows — arranca inmediatamente
 ```
 
+O si instalaste el servicio — se lanza automáticamente cada vez que inicias sesión. **No necesitas volver a abrir un terminal nunca más.**
+
 > 🏠 **Voz 100% local.** Whisper para reconocimiento, Piper/pyttsx3 para habla.  
-> Sin APIs de voz en la nube. Solo el LLM necesita internet — o nada si usas Ollama.
+> Sin APIs de voz en la nube. Solo el LLM necesita internet — o nada si usas Ollama local.
+
+### 📦 Instalación manual (alternativa)
+
+```bash
+pip install -r requirements.txt
+# Copia .env.example a .env y añade tu API key
+# Personaliza config.yaml a tu gusto
+python main.py
+```
+
+---
+
+### 🪟 Servicio en Segundo Plano — Instala una vez, funciona siempre
+
+El instalador te ofrece configurar Sentinel como **servicio en segundo plano de Windows**. Si aceptas:
+
+- ✅ Sentinel arranca **automáticamente** cada vez que inicias sesión en Windows
+- ✅ Sin ventana de consola — solo un 🟢 **icono verde** en la bandeja del sistema
+- ✅ `F9` funciona **globalmente** desde cualquier aplicación
+- ✅ `Ctrl+Alt+Q` cierra el servicio cuando quieras
+- ✅ Las respuestas se escuchan por los altavoces
+
+| SO | Comando de instalación | Iniciar | Parar |
+|----|----------------------|---------|-------|
+| 🪟 **Windows** | `powershell -File install_service.ps1` | `start_sentinel.bat` o auto | `stop_sentinel.bat` o `Ctrl+Alt+Q` |
+| 🐧 **Linux** | `bash install_service.sh` | Auto (systemd) | `systemctl --user stop sentinel` |
+| 🍏 **macOS** | `bash install_service.sh` | Auto (launchd) | `launchctl unload ~/Library/LaunchAgents/com.sentinel.agent.plist` |
+
+> 💡 **Truco:** Puedes instalar el servicio más tarde ejecutando el comando de arriba, o volviendo a lanzar `python install.py` y diciendo "Sí" a la pregunta del servicio.
 
 ---
 
@@ -465,24 +515,6 @@ logging:
 | `window_minimize` | Minimizar | *"Minimiza esta ventana"* |
 | `session_list` | Historial | *"Muéstrame mis sesiones"* |
 | `session_load` | Restaurar | *"Restaura mi última sesión"* |
-
----
-
-### 🪟 Servicio en Segundo Plano (Sin Consola)
-
-Ejecuta Sentinel invisible, accesible desde cualquier aplicación con una tecla global:
-
-| SO | Instalar | Iniciar | Parar |
-|----|---------|-------|------|
-| 🪟 **Windows** | `powershell -File install_service.ps1` | `start_sentinel.bat` | `stop_sentinel.bat` o `Ctrl+Alt+Q` |
-| 🐧 **Linux** | `bash install_service.sh` | Auto (systemd) | `systemctl --user stop sentinel` |
-| 🍏 **macOS** | `bash install_service.sh` | Auto (launchd) | `launchctl unload ~/Library/LaunchAgents/com.sentinel.agent.plist` |
-
-Como servicio:
-- 🟢 Icono verde en la bandeja — Sentinel está listo
-- 🎤 `F9` funciona desde cualquier ventana
-- ❌ `Ctrl+Alt+Q` para salir
-- 🔊 Respuestas por los altavoces
 
 ---
 
