@@ -35,7 +35,11 @@ def _load_knowledge() -> str:
 
     current_os = _detect_os()
 
-    core_files = {"01-identity.md", "02-opening-apps.md", "06-cross-platform.md", "07-sessions.md", "08-efficiency.md"}
+    core_files = {
+        "01-identity.md", "02-opening-apps.md", "06-cross-platform.md",
+        "07-sessions.md", "08-efficiency.md", "09-accessibility.md",
+        "10-help.md", "11-workflows.md",
+    }
     os_files = {
         "windows": {"03-windows.md"},
         "linux": {"04-linux.md"},
@@ -65,6 +69,32 @@ def _load_knowledge() -> str:
 _FULL_SYSTEM_PROMPT = SYSTEM_PROMPT + "\n\n" + _load_knowledge()
 
 
+def get_profile_prompt(profile: str) -> str:
+    if profile == "child":
+        return """
+## CHILD MODE - CRITICAL
+You are speaking to a young child. Follow these rules strictly:
+- Use very simple words. Short sentences. Like talking to a 5-year-old.
+- Be encouraging and playful. Celebrate their successes.
+- NEVER suggest anything dangerous, violent, or inappropriate.
+- NEVER open social media, messaging apps, or adult content.
+- NEVER reveal personal information or passwords.
+- If the child asks about something you shouldn't do, gently redirect: "Mejor hagamos otra cosa divertida."
+- Suggest educational and creative activities when they don't know what to do.
+- Use examples from cartoons, animals, games, and fun topics.
+"""
+    elif profile == "expert":
+        return """
+## EXPERT MODE
+You are speaking to a technical expert. Be concise and efficient.
+- Minimal pleasantries. Direct commands and results.
+- Use technical terminology freely.
+- Show command outputs directly.
+- One sentence confirmations: "Done. Spotify opened."
+"""
+    return ""
+
+
 class LLMEngine:
     def __init__(self, config: dict):
         self.config = config
@@ -87,8 +117,13 @@ class LLMEngine:
         self.model = self._provider.model
         log.info("LLM provider: %s | model: %s", self.provider_type, self.model)
 
-    def chat(self, messages: list[dict], tools: list[dict] | None = None) -> dict:
-        system_msg = {"role": "system", "content": _FULL_SYSTEM_PROMPT}
+    def chat(self, messages: list[dict], tools: list[dict] | None = None, profile: str = "standard") -> dict:
+        profile_prompt = get_profile_prompt(profile)
+        system_content = _FULL_SYSTEM_PROMPT
+        if profile_prompt:
+            system_content += "\n" + profile_prompt
+
+        system_msg = {"role": "system", "content": system_content}
         self._apply_caching(system_msg)
         full_messages = [system_msg] + messages
 

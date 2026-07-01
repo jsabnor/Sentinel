@@ -1,7 +1,5 @@
 import logging
 import time
-import traceback
-from typing import Any
 
 import numpy as np
 
@@ -18,6 +16,7 @@ from sentinel.voice.tts import TextToSpeech
 from sentinel.voice.wakeword import WakeWordDetector
 from sentinel.ui.indicator import StatusIndicator
 from sentinel.sessions import SessionManager
+from sentinel.ui.sounds import play_listen_start, play_task_done
 
 log = logging.getLogger("sentinel")
 
@@ -60,12 +59,15 @@ class SentinelAgent:
             voice_cfg = config.get("voice", {})
             self._activation = voice_cfg.get("activation", "wakeword")
             self._ptt_key = voice_cfg.get("push_to_talk_key", "ctrl+alt+s")
+            self._profile = voice_cfg.get("profile", "standard")
+            self._conv_timeout = voice_cfg.get("conversation_timeout", 0)
         else:
             self.stt = None
             self.tts = None
             self.wakeword = None
             self._activation = "always"
             self._ptt_key = None
+            self._conv_timeout = 0
 
         self._register_tools()
 
@@ -97,6 +99,10 @@ class SentinelAgent:
                 if not approved:
                     return "User denied screenshot."
             return self.desktop.screenshot()
+
+        @_register("desktop_read_screen")
+        def desktop_read_screen():
+            return self.desktop.read_screen()
 
         @_register("desktop_click")
         def desktop_click(x: int, y: int, button: str = "left"):
@@ -266,7 +272,7 @@ class SentinelAgent:
             except (EOFError, KeyboardInterrupt):
                 break
             except Exception:
-                traceback.print_exc()
+                log.exception("Error in agent loop")
 
     def run_voice(self):
         self.running = True
@@ -335,10 +341,12 @@ class SentinelAgent:
                 if self.tts:
                     time.sleep(0.5)
 
+                self.wakeword.sleep()
+
             except (EOFError, KeyboardInterrupt):
                 break
             except Exception:
-                traceback.print_exc()
+                log.exception("Error in agent loop")
 
     def _run_pushtotalk(self):
         self.running = True
@@ -381,6 +389,8 @@ class SentinelAgent:
                     continue
 
                 self.indicator.set_state("listening")
+                play_listen_start()
+                time.sleep(0.3)  # Let wakeword release the mic
                 print("  [Recording...] release to send", end="", flush=True)
 
                 full_audio = sd.rec(int(max_duration * sr), samplerate=sr, channels=1, dtype="int16")
@@ -422,7 +432,6 @@ class SentinelAgent:
 
                 if not text:
                     print(f"  [No speech detected] energy={int(energy)}")
-                    self._save_debug_audio(audio, sr)
                     continue
 
                 if text.lower() in ("salir", "exit", "apagar", "shutdown", "stop sentinel"):
@@ -437,16 +446,31 @@ class SentinelAgent:
 
                 response = self._process(text)
                 self.indicator.set_state("speaking")
+                play_task_done()
                 self._speak(response)
 
                 if self.tts:
                     time.sleep(0.5)
 
+                if self._conv_timeout > 0:
+                    self.indicator.set_state("listening")
+                    time.sleep(0.3)
+                    followup = self.stt.listen(timeout=self._conv_timeout, phrase_time_limit=6)
+                    if followup and followup.strip():
+                        print(f"  [Followup] {followup}")
+                        text = followup
+                        self.indicator.set_state("processing")
+                        response = self._process(text)
+                        self.indicator.set_state("speaking")
+                        play_task_done()
+                        self._speak(response)
+                        if self.tts:
+                            time.sleep(0.5)
+
             except (EOFError, KeyboardInterrupt):
                 break
             except Exception:
-                traceback.print_exc()
-                time.sleep(0.5)
+                log.exception("Error in agent loop")
 
     def _run_always(self):
         self.running = True
@@ -500,7 +524,7 @@ class SentinelAgent:
             except (EOFError, KeyboardInterrupt):
                 break
             except Exception:
-                traceback.print_exc()
+                log.exception("Error in agent loop")
 
     def _process(self, text: str):
         log.info("User: %s", text)
@@ -524,7 +548,7 @@ class SentinelAgent:
 
     def _process_with_tools(self):
         self._trim_history(max_messages=12)
-        response = self.llm.chat(self.conversation_history, tools=self._get_tool_definitions())
+        response = self.llm.chat(self.conversation_history, tools=self._get_tool_definitions(), profile=self._profile)
 
         tool_iterations = 0
         max_iterations = 8
@@ -568,7 +592,7 @@ class SentinelAgent:
                     "content": tr["result"],
                 })
 
-            response = self.llm.chat(self.conversation_history, tools=self._get_tool_definitions())
+            response = self.llm.chat(self.conversation_history, tools=self._get_tool_definitions(), profile=self._profile)
 
         reply = response.get("content", "")
         self.conversation_history.append({"role": "assistant", "content": reply})
@@ -609,6 +633,14 @@ class SentinelAgent:
                 "function": {
                     "name": "desktop_screenshot",
                     "description": "Take a screenshot of the current desktop",
+                    "parameters": {"type": "object", "properties": {}},
+                },
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "desktop_read_screen",
+                    "description": "Analyze what's currently on screen. Use with window_list to understand context.",
                     "parameters": {"type": "object", "properties": {}},
                 },
             },
@@ -974,22 +1006,6 @@ class SentinelAgent:
             text += "."
 
         return text
-
-    def _save_debug_audio(self, audio, sr):
-        try:
-            import wave
-            from pathlib import Path
-            Path("debug_audio").mkdir(exist_ok=True)
-            t = int(__import__("time").time())
-            path = f"debug_audio/recording_{t}.wav"
-            with wave.open(path, "wb") as wf:
-                wf.setnchannels(1)
-                wf.setsampwidth(2)
-                wf.setframerate(sr)
-                wf.writeframes(audio.tobytes())
-            print(f"  [Debug audio saved: {path}]")
-        except Exception:
-            pass
 
     @staticmethod
     def _resample(audio, orig_sr):

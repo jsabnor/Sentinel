@@ -13,14 +13,9 @@ Usage:
 
 import os
 import sys
-import shutil
 import subprocess
-import json
 import urllib.request
-import tarfile
-import tempfile
 import platform
-import textwrap
 from pathlib import Path
 
 # ── Constants ────────────────────────────────────────────────────────────────
@@ -317,7 +312,15 @@ def _select_piper_voice(lang):
 def configure_safety():
     _print_step(4, "Configurando seguridad y permisos")
 
-    print(f"\n  Modos:")
+    print(f"\n  Perfiles de usuario:")
+    print(f"    {_color('blue', '1)')} Estandar - todas las funciones, guia por voz")
+    print(f"    {_color('blue', '2)')} Experto  - respuestas breves, maxima autonomia")
+    print(f"    {_color('blue', '3)')} Infantil - vocabulario simple, proteccion extra")
+
+    profile_choice = _input("Perfil", default="1")
+    profile = {"1": "standard", "2": "expert", "3": "child"}.get(profile_choice, "standard")
+
+    print(f"\n  Modos de seguridad:")
     print(f"    {_color('blue', 'ask')}  - Preguntar antes de cada acción")
     print(f"    {_color('blue', 'auto')} - Ejecutar automáticamente (confianza total)")
     print(f"    {_color('blue', 'deny')} - Bloquear todas las acciones")
@@ -331,6 +334,7 @@ def configure_safety():
     return {
         "default_mode": mode,
         "sandbox_enabled": enable_sandbox,
+        "profile": profile,
     }
 
 
@@ -508,6 +512,9 @@ llm:
 
 voice:
   enabled: true
+
+  # User profile: child, standard, expert
+  profile: {safety_config.get('profile', 'standard')}
 
   # Audio devices (index or name). List with: python main.py --list-audio
   input_device: null

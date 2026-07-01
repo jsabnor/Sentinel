@@ -133,3 +133,20 @@ class DesktopController:
             return f"Screen resolution: {w}x{h}."
         except Exception as e:
             return f"Error getting screen size: {e}"
+
+    def read_screen(self) -> str:
+        """Capture screenshot and return description for the agent."""
+        if not HAS_PYAUTOGUI or not HAS_PIL:
+            return "Desktop control dependencies not installed."
+        try:
+            img = pyautogui.screenshot()
+            import io, base64
+            buf = io.BytesIO()
+            img.save(buf, format="PNG", quality=30)
+            b64 = base64.b64encode(buf.getvalue()).decode()
+            return (
+                f"Screenshot taken ({img.size[0]}x{img.size[1]}). "
+                f"Use window_list and process_list to identify what's on screen."
+            )
+        except Exception as e:
+            return f"Error: {e}"

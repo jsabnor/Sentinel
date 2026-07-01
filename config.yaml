@@ -42,6 +42,12 @@ llm:
 voice:
   enabled: true
 
+  # User profile: child, standard, expert
+  # child = simplified language, restricted actions, extra safety
+  # standard = full features, voice guidance
+  # expert = minimal chatter, maximum autonomy
+  profile: standard
+
   # Audio devices (index or name). List with: python main.py --list-audio
   # Audio devices. Set null to use Windows system defaults.
   # First configure defaults in Windows: Sound Settings > Input/Output
@@ -69,9 +75,12 @@ voice:
   activation: pushtotalk
   wakeword_model: tiny
   wake_words:
+    - centinela
     - sentinel
+    - hey sentinel
   push_to_talk_key: f9
   quit_key: ctrl+alt+q
+  conversation_timeout: 4       # Seconds to auto-listen for follow-up after response (0 = disabled)
 
 safety:
   default_mode: auto

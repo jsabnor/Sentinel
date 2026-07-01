@@ -22,12 +22,11 @@ from sentinel.core import SentinelAgent
 
 
 def _setup_logging():
+    fh = logging.FileHandler("sentinel_service.log", encoding="utf-8")
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
-        handlers=[
-            logging.FileHandler("sentinel_service.log", encoding="utf-8"),
-        ],
+        handlers=[fh],
     )
 
 
@@ -67,7 +66,11 @@ def main():
             else:
                 agent._run_pushtotalk()
         except Exception as e:
-            log.error("Agent error: %s", e)
+            with open("sentinel_crash.log", "a", encoding="utf-8") as f:
+                import traceback as _tb
+                f.write(f"{__import__('datetime').datetime.now()} AGENT CRASH: {e}\n")
+                _tb.print_exc(file=f)
+            log.error("Agent error: %s", e, exc_info=True)
         finally:
             agent.stop()
 
@@ -95,6 +98,12 @@ def main():
             time.sleep(0.1)
     except KeyboardInterrupt:
         pass
+    except Exception as e:
+        with open("sentinel_crash.log", "a", encoding="utf-8") as f:
+            import traceback as _tb
+            f.write(f"{__import__('datetime').datetime.now()} CRASH: {e}\n")
+            _tb.print_exc(file=f)
+        log.error("Main loop error: %s", e, exc_info=True)
 
     agent.stop()
     log.info("Sentinel stopped.")

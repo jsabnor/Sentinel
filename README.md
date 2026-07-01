@@ -1,626 +1,251 @@
-# 🛡️ Sentinel — AI OS Agent
+# Sentinel v1.1.0 - AI OS Agent
 
-> *"Tu voz. Tu sistema. Tu centinela."*  
-> Agente de IA controlado por voz que gestiona tu sistema operativo al completo.  
-> Diseñado para accesibilidad ♿ — 100% utilizable por personas con discapacidad visual.
+> Voice-controlled AI agent for complete operating system management.
+> Designed for universal accessibility — usable by anyone, regardless of age or ability.
 
-[🧭 English](#english) · [🌐 Español](#espanol)
+[English](#english) | [Español](#espanol)
 
 ---
 
 <a name="english"></a>
-## 🧭 English
+## English
 
-### 🤖 What is Sentinel?
+### What is Sentinel?
 
-Sentinel is a voice-controlled AI agent that turns natural language into actions on your computer. Just talk to it — it clicks, types, opens apps, manages files, runs terminal commands, and controls windows for you.
+Sentinel is a voice-controlled AI agent that manages your operating system. You speak, it acts. It opens applications, searches the web, manages files, controls the desktop, reads your screen, and guides you through complex tasks — all by voice. Designed for accessibility.
 
-No mouse. No keyboard. No screen required. **You speak. Sentinel acts.**
-
-| 🎯 Use Case | 💬 Just say... |
-|------------|----------------|
-| Open apps | *"Open Chrome and go to YouTube"* |
-| Files & folders | *"Create a folder called Project on the desktop"* |
-| System info | *"How much RAM do I have left?"* |
-| Window control | *"Minimize all windows"* |
-| Web searches | *"Search Google for the weather in Madrid"* |
-| Terminal commands | *"Check my IP address"* |
-| Keyboard control | *"Press Ctrl+Shift+Esc"* |
-| Process management | *"Close Spotify"* |
-
----
-
-### ⚡ Quick Install
-
-The fastest way — **one command does it all**:
+### Quick Start
 
 ```bash
-git clone https://github.com/jsabnor/sentinel.git
+git clone <repo-url> sentinel
 cd sentinel
 python install.py
 ```
 
-### 🧙 What the installer does for you
+The installer sets up everything: dependencies, API keys, voice models, and optionally installs Sentinel as a background service that starts with your OS.
 
-`install.py` is a complete guided setup. It will NEVER leave you with a half-configured project:
+### Usage
 
-| Step | What happens |
-|------|-------------|
-| 1. 📦 | **Python dependencies** — installs everything from `requirements.txt` via pip |
-| 2. 🧠 | **LLM provider** — choose DeepSeek, OpenAI, Ollama, etc. Paste your API key |
-| 3. 🎤 | **Voice setup** — pick Whisper model size (`tiny` to `large`) and TTS engine (pyttsx3, Piper, Edge) |
-| 4. ⬇️ | **Downloads Whisper** — offline speech recognition (~150 MB `base`, ~500 MB `small`) |
-| 5. 🗣️ | **Downloads Piper voice** — optional neural Spanish/English voice (~30 MB) |
-| 6. 🔐 | **Permissions** — set safety mode (`auto` / `ask` / `deny`), configure wake words |
-| 7. 📝 | **Creates config** — generates `.env` + `config.yaml` ready to use |
-| 8. 🪟 | **Windows service** — optional: install Sentinel as a background service that auto-starts on login |
+| Action | How |
+|--------|-----|
+| **Push-to-talk** (default) | Press **F9**, speak, release. Agent responds. Then auto-listens 4s for follow-up. |
+| **Chat mode** | `python main.py chat` |
+| **Background service** | `start_sentinel.bat` (Windows) — no console, starts with OS |
+| **List sessions** | `python main.py --list-sessions` |
+| **List audio devices** | `python main.py --list-audio` |
 
-### 🚀 After install
+### Voice Pipeline (100% Local)
 
-```bash
-start_sentinel.bat        # Windows — starts immediately
-```
+| Stage | Engine | Notes |
+|-------|--------|-------|
+| Speech-to-Text | Whisper (`small` recommended) | Offline, Spanish-capable |
+| Text-to-Speech | Piper / pyttsx3 / Edge | Offline neural TTS |
+| Audio Capture | sounddevice | Auto-detects device sample rate |
 
-Or if you installed the service — it launches automatically every time you log in. **You never need to touch a terminal again.**
-
-> 🏠 **Voice is 100% local.** Whisper for speech recognition, Piper/pyttsx3 for TTS.  
-> No cloud voice APIs. Only the LLM needs internet — or none at all with Ollama.
-
-### 📦 Manual install (alternative)
-
-```bash
-pip install -r requirements.txt
-# Copy .env.example to .env and add your API key
-# Edit config.yaml to your liking
-python main.py
-```
-
----
-
-### 🪟 Background Service — Install once, run forever
-
-The installer offers to set up Sentinel as a **Windows background service**. If you accept:
-
-- ✅ Sentinel starts **automatically** every time you log into Windows
-- ✅ No console window — just a 🟢 **green icon** in the system tray
-- ✅ `F9` push-to-talk works **globally**, from any application
-- ✅ `Ctrl+Alt+Q` quits the service when needed
-- ✅ Voice responses play through your speakers
-
-| OS | Install command | Start | Stop |
-|----|----------------|-------|------|
-| 🪟 **Windows** | `powershell -File install_service.ps1` | `start_sentinel.bat` or auto | `stop_sentinel.bat` or `Ctrl+Alt+Q` |
-| 🐧 **Linux** | `bash install_service.sh` | Auto (systemd) | `systemctl --user stop sentinel` |
-| 🍏 **macOS** | `bash install_service.sh` | Auto (launchd) | `launchctl unload ~/Library/LaunchAgents/com.sentinel.agent.plist` |
-
-> 💡 **Tip:** You can install the service later by running the command above, or by re-running `python install.py` and answering "Yes" to the service question.
-
----
-
-### 🎮 Usage
-
-```bash
-python main.py                 # 🎤 Voice mode (push-to-talk)
-python main.py chat            # 💬 Text chat mode
-python main.py --help          # 📋 All options
-python main.py --list-audio    # 🎧 List audio devices
-python main.py --list-sessions # 📂 List saved sessions
-```
-
-#### 🎤 Push-to-Talk
-
-| Key | Action |
-|-----|--------|
-| `F9` | Hold to record, release to send (configurable) |
-| `Ctrl+Alt+Q` | Quit Sentinel |
-
-**How it works:** Hold `F9` → speak your command → release → Sentinel processes and responds by voice.
-
-#### 💬 Chat mode commands
-
-| Command | Description |
-|---------|-------------|
-| `/exit` | 🚪 Quit |
-| `/voice` | 🎤 Switch to voice mode |
-| `/provider` | 🧠 Show current LLM provider |
-| `/mode ask\|auto\|deny` | 🔐 Change permission mode |
-| `/sessions` | 📂 List saved sessions |
-| `/help` | ❓ Show help |
-
----
-
-### 🗣️ Voice Pipeline (100% Local)
-
-| Component | Engine | Details |
-|-----------|--------|---------|
-| 🎯 Wake Word | Whisper `tiny` | Fast detection, low CPU |
-| 🎤 Speech → Text | Whisper `base`/`small` | Offline, multi-language |
-| 🔊 Text → Speech | pyttsx3 / Piper / Edge | Neural offline TTS |
-
-Auto-detects device sample rate. Resamples to 16 kHz for Whisper.
-
----
-
-### ⚙️ Configuration (`config.yaml`)
+### Configuration (`config.yaml`)
 
 ```yaml
 llm:
-  provider: deepseek              # openai, anthropic, ollama, groq, google, openrouter
+  provider: deepseek          # openai, anthropic, deepseek, ollama, groq, google, openrouter
   model: deepseek-v4-flash
-  temperature: 0.4
-  max_tokens: 4096
+  temperature: 0.2
 
 voice:
-  input_device: null              # null = Windows default mic
-  output_device: null             # null = Windows default speakers
-  stt:
-    engine: whisper
-    language: es                  # en, es, fr, de...
-    model: small                  # tiny / base / small / medium / large
-  tts:
-    engine: piper                 # pyttsx3, piper, edge
-    rate: 180
-    piper:
-      model_path: "models/piper/es_ES-carlfm-x_low/es_ES-carlfm-x_low.onnx"
-  activation: pushtotalk          # wakeword, pushtotalk, always
-  wake_words: [sentinel]
+  profile: standard           # child, standard, expert
+  activation: pushtotalk      # wakeword, pushtotalk, always
   push_to_talk_key: f9
   quit_key: ctrl+alt+q
+  conversation_timeout: 4     # Auto-listen seconds after response (0 = off)
+  wake_words: [sentinel, centinela]
+  wakeword_model: tiny
+  input_device: null          # Mic (null = Windows default)
+  output_device: null         # Speakers (null = Windows default)
+  stt:
+    engine: whisper
+    language: es
+    model: small
+  tts:
+    engine: piper             # piper, pyttsx3, edge
+    piper:
+      model_path: "models/piper/es_ES-carlfm-x_low/es_ES-carlfm-x_low.onnx"
 
 safety:
-  default_mode: auto              # ask → confirm each action | auto → trust | deny → block all
+  default_mode: auto
   permissions:
     terminal:
+      mode: auto
       blocked_commands: [rm -rf /, format, diskpart]
     files:
-      blocked_paths: [C:\Windows, /etc, /boot]
+      mode: auto
+      blocked_paths: [C:\Windows, C:\Windows\System32, /etc, /boot]
+    processes:
+      mode: auto
+      blocked_processs: [System, svchost]
   high_risk_patterns: [delete, remove, shutdown, kill]
-
-desktop:
-  screenshot_quality: 80
-  mouse_speed: 0.3
-
-logging:
-  level: INFO
-  file: sentinel.log
 ```
 
----
+### Accessibility Features
 
-### 🧰 Capabilities — What Sentinel can do for you
+| Feature | Description |
+|---------|-------------|
+| **Voice control** | Full PC control by voice. No keyboard or mouse needed. |
+| **Audio cues** | Beep when listening (F9 pressed), double-chime when done. |
+| **Visual indicator** | Top-right status bar: "En espera", "REC Escuchando", "Procesando", "Respondiendo". |
+| **User profiles** | `child` (simple words, extra safety), `standard`, `expert` (concise). |
+| **Conversation mode** | After responding, auto-listens for follow-up questions. |
+| **Screen reading** | "¿Qué hay en pantalla?" — describes windows and content. |
+| **Guided workflows** | Step-by-step for email, browsing, weather, file management. |
+| **Clean speech** | Responses stripped of emojis, markdown, and formatting for natural TTS. |
+| **Session management** | Save/restore conversations. Voice or chat commands. |
+| **Error recovery** | Clear spoken explanations on failure. Crash logs for debugging. |
 
-| 🛠️ Tool | 📝 Description | 💬 Example command |
-|---------|---------------|-------------------|
-| `terminal_execute` | Run shell commands | *"Install requests with pip"* |
-| `desktop_screenshot` | Take screenshots | *"Show me what's on screen"* |
-| `desktop_click` | Click coordinates | *"Click on the Start button"* |
-| `desktop_type` | Type text | *"Type Hello World in Notepad"* |
-| `desktop_move_mouse` | Move cursor | *"Move the mouse to the center"* |
-| `desktop_press_key` | Single key press | *"Press Enter"* |
-| `desktop_hotkey` | Key combos | *"Press Alt+Tab"* |
-| `file_read` | Read files | *"Read the README file"* |
-| `file_write` | Write files | *"Save 'hello' to notes.txt"* |
-| `file_list` | List directory | *"What's on my desktop?"* |
-| `file_delete` | Delete files | *"Delete temp.txt"* |
-| `process_list` | List processes | *"What's running?"* |
-| `process_kill` | Kill process | *"Close Chrome"* |
-| `system_info` | CPU, RAM, disk | *"How's my system doing?"* |
-| `window_list` | List open windows | *"What windows are open?"* |
-| `window_focus` | Switch windows | *"Switch to Notepad"* |
-| `window_minimize` | Minimize | *"Minimize this window"* |
-| `session_list` | Session history | *"Show my sessions"* |
-| `session_load` | Resume session | *"Restore my last session"* |
+### Capabilities (17 Tools)
 
----
+`terminal_execute`, `desktop_screenshot`, `desktop_read_screen`, `desktop_click`, `desktop_type`, `desktop_move_mouse`, `desktop_press_key`, `desktop_hotkey`, `file_read`, `file_write`, `file_list`, `file_delete`, `process_list`, `process_kill`, `system_info`, `window_list`, `window_focus`, `window_minimize`, `session_list`, `session_load`
 
-### 📚 Knowledge Base
+### Background Service
 
-Sentinel loads OS-specific knowledge from `knowledge/*.md` at startup — only the files relevant to your OS, saving tokens.
+| OS | Install | Control |
+|----|---------|---------|
+| **Windows** | `powershell -File install_service.ps1` | `start_sentinel.bat` / `stop_sentinel.bat` |
+| **Linux** | `bash install_service.sh` | `systemctl --user start/stop sentinel` |
+| **macOS** | `bash install_service.sh` | `launchctl load/unload` |
 
-```
-knowledge/
-  01-identity.md           Agent persona & voice rules
-  02-opening-apps.md       How apps are launched
-  03-windows.md            Windows tips & tricks
-  04-linux.md              Linux tips & tricks
-  05-macos.md              macOS tips & tricks
-  06-cross-platform.md     Multi-OS reference
-  07-sessions.md           Session management
-  08-efficiency.md         Performance optimization
-```
+No console window. Global hotkey works from any application. F9 to talk, Ctrl+Alt+Q to quit.
 
-Edit or add `.md` files to teach Sentinel new skills — **no code changes needed**.
+### Supported LLM Providers
 
----
+| Provider | Model | Notes |
+|----------|-------|-------|
+| DeepSeek | `deepseek-v4-flash` | Recommended |
+| OpenAI | `gpt-4o` | Prompt caching automatic |
+| Anthropic | `claude-sonnet-4` | Prompt caching via `cache_control` |
+| Ollama | `llama3` | Local, no API key |
+| Groq | `llama-3.3-70b` | Fast inference |
+| Google | `gemini-2.5-flash` | Gemini API |
+| OpenRouter | `openai/gpt-4o` | Multi-provider |
+| MiniMax | `abab7-chat` | |
+| OpenCode | | |
 
-### 💾 Sessions
+### Knowledge Base
 
-- Each run creates a timestamped session
-- Auto-saved on exit to `sessions/`
-- 🎤 *"Restore my last session"* → picks up where you left off
-- 💬 `/sessions` lists all saved sessions
-- History trimmed to 12 messages to save tokens
+Agent knowledge is stored as editable Markdown files in `knowledge/`:
+- `01-identity.md` — Agent identity and voice rules
+- `02-opening-apps.md` — Application launching procedure
+- `03-windows.md` — Windows administration
+- `04-linux.md` — Linux administration
+- `05-macos.md` — macOS administration
+- `06-cross-platform.md` — Cross-platform commands
+- `07-sessions.md` — Session management
+- `08-efficiency.md` — Efficient command patterns
+- `09-accessibility.md` — Universal accessibility design
+- `10-help.md` — Help and onboarding
+- `11-workflows.md` — Guided task workflows
 
----
-
-### ⚡ Token Optimization
-
-| Technique | Savings |
-|-----------|---------|
-| History trimming (12 msgs) | ~60% fewer tokens |
-| OS-specific knowledge | ~40% fewer tokens |
-| Anthropic prompt caching | Reuses system prompt |
-| TTS response cleaning | Removes emojis & formatting |
-
----
-
-### 🔌 Supported LLM Providers
-
-| Provider | API Key | Highlights |
-|----------|---------|------------|
-| 🧠 **DeepSeek** | `DEEPSEEK_API_KEY` | Recommended — fast & affordable |
-| 🤖 OpenAI | `OPENAI_API_KEY` | GPT-4o, GPT-4 |
-| 🎓 Anthropic | `ANTHROPIC_API_KEY` | Claude, prompt caching |
-| 🏠 **Ollama** | *None* | Fully local, zero internet |
-| ⚡ Groq | `GROQ_API_KEY` | Ultra-fast inference |
-| 🌐 Google | `GOOGLE_API_KEY` | Gemini models |
-| 🔀 OpenRouter | `OPENROUTER_API_KEY` | Access to 200+ models |
-| 🎯 MiniMax | `MINIMAX_API_KEY` | Budget-friendly alternative |
-| 💻 OpenCode | `OPENCODE_API_KEY` | Code-specialized API |
-
----
-
-### 🩺 Troubleshooting
-
-| Problem | Solution |
-|---------|----------|
-| 🎤 Mic not picking up | `python main.py --list-audio` → set `input_device` in config |
-| 🔊 No sound | Check `output_device` or use Windows defaults |
-| ⬇️ Whisper download | Auto-downloads on first use (~150-500 MB). Use `install.py` to pre-download |
-| 🗣️ Piper voice | Download `.onnx` from [Piper releases](https://github.com/rhasspy/piper/releases) |
-| 🔑 API errors | Verify key is in `.env`, use `deepseek-v4-flash` (not `deepseek-chat`) |
-
----
-
-### 🗂️ Project Structure
+### Project Structure
 
 ```
 sentinel/
-├── main.py                    # 🚀 Entry point + CLI
-├── install.py                 # 📦 Interactive installer
-├── sentinel_service.py        # 🪟 Background service
-├── sentinelw.pyw              # 🪟 No-console launcher
-├── config.yaml                # ⚙️ Configuration
-├── requirements.txt           # 📋 Dependencies
-├── knowledge/                 # 📚 Agent knowledge (.md)
+├── main.py                    # Entry point + CLI
+├── install.py                 # Interactive installer
+├── sentinelw.pyw              # Windows background launcher (no console)
+├── sentinel_service.py        # Cross-platform background service
+├── start_sentinel.bat         # Start background service
+├── stop_sentinel.bat          # Stop background service
+├── check_sentinel.bat         # Check if service is running
+├── install_service.ps1        # Windows service installer
+├── install_service.sh         # Linux/macOS service installer
+├── config.yaml                # Configuration
+├── requirements.txt           # Dependencies
+├── knowledge/                 # Agent knowledge (.md files)
+├── sessions/                  # Saved conversations
 ├── sentinel/
-│   ├── core.py                # 🔄 Main loop, tools, push-to-talk
-│   ├── config.py              # 📄 YAML + .env loader
-│   ├── sessions.py            # 💾 Session manager
+│   ├── core.py                # Main agent loop, tools, voice modes
+│   ├── config.py              # YAML + .env loader
+│   ├── sessions.py            # Session save/load/list
 │   ├── agent/
-│   │   ├── llm.py             # 🧠 LLM engine, knowledge loading
-│   │   └── prompts.py         # 💬 System prompt builder
+│   │   ├── llm.py             # LLM engine, knowledge loader, caching
+│   │   └── prompts.py         # System prompt
 │   ├── actions/
-│   │   ├── terminal.py        # ⌨️ Terminal & app launcher
-│   │   ├── desktop.py         # 🖱️ Mouse, keyboard, screenshots
-│   │   ├── files.py           # 📁 File operations
-│   │   ├── processes.py       # 📊 Process management
-│   │   └── windows.py         # 🪟 Window management
-│   ├── providers/             # 🔌 LLM providers (OpenAI, Anthropic, DeepSeek...)
+│   │   ├── terminal.py        # Shell execution + app launching
+│   │   ├── desktop.py         # Mouse, keyboard, screenshots, screen reading
+│   │   ├── files.py           # File operations
+│   │   ├── processes.py       # Process management
+│   │   └── windows.py         # Window management
+│   ├── providers/             # 9 LLM providers
 │   ├── safety/
-│   │   ├── permissions.py     # 🔐 Permission manager
-│   │   └── sandbox.py         # 🏖️ Execution sandbox
+│   │   ├── permissions.py     # Permission manager
+│   │   └── sandbox.py         # Sandbox
 │   ├── voice/
-│   │   ├── wakeword.py        # 🎯 Wake word detection
-│   │   ├── stt.py             # 🎤 Speech-to-text (Whisper)
-│   │   └── tts.py             # 🔊 Text-to-speech
+│   │   ├── wakeword.py        # Wake word detection
+│   │   ├── stt.py             # Speech-to-text (Whisper)
+│   │   └── tts.py             # Text-to-speech (Piper/pyttsx3/Edge)
 │   └── ui/
-│       └── indicator.py       # 🟢 System tray indicator
+│       ├── indicator.py       # Desktop status indicator
+│       └── sounds.py          # Audio feedback cues
 ```
 
 ---
 
 <a name="espanol"></a>
-## 🌐 Español
+## Español
 
-### 🤖 Qué es Sentinel
+### Qué es Sentinel
 
-Sentinel es un agente de IA que convierte tu voz en acciones sobre el ordenador. Le hablas — y él hace clic, escribe, abre aplicaciones, gestiona archivos, ejecuta comandos y controla ventanas por ti.
+Sentinel es un agente de IA controlado por voz que gestiona tu sistema operativo. Abre aplicaciones, busca en internet, gestiona archivos, controla el escritorio, lee tu pantalla y te guía paso a paso — todo por voz. Diseñado para accesibilidad universal.
 
-Sin ratón. Sin teclado. Sin pantalla. **Tú hablas. Sentinel actúa.**
-
-| 🎯 Caso de uso | 💬 Solo di... |
-|---------------|---------------|
-| Abrir apps | *"Abre Chrome y ve a YouTube"* |
-| Archivos | *"Crea una carpeta Proyecto en el escritorio"* |
-| Sistema | *"Cuánta RAM tengo libre?"* |
-| Ventanas | *"Minimiza todas las ventanas"* |
-| Búsquedas | *"Busca en Google el tiempo en Madrid"* |
-| Terminal | *"Dime mi dirección IP"* |
-| Teclado | *"Pulsa Control+Shift+Escape"* |
-| Procesos | *"Cierra Spotify"* |
-
----
-
-### ⚡ Instalación Rápida
-
-La forma más rápida — **un solo comando lo hace todo**:
+### Inicio Rápido
 
 ```bash
-git clone https://github.com/jsabnor/sentinel.git
+git clone <repo-url> sentinel
 cd sentinel
 python install.py
 ```
 
-### 🧙 Lo que hace el instalador por ti
+El instalador configura todo: dependencias, API keys, modelos de voz, y opcionalmente instala Sentinel como servicio en segundo plano.
 
-`install.py` es una experiencia guiada completa. NUNCA te deja con una configuración a medias:
+### Uso
 
-| Paso | Qué ocurre |
-|------|-----------|
-| 1. 📦 | **Dependencias Python** — instala todo desde `requirements.txt` vía pip |
-| 2. 🧠 | **Proveedor LLM** — elige DeepSeek, OpenAI, Ollama... Pega tu API key |
-| 3. 🎤 | **Configuración de voz** — elige tamaño de Whisper (`tiny` a `large`) y motor TTS (pyttsx3, Piper, Edge) |
-| 4. ⬇️ | **Descarga Whisper** — reconocimiento de voz offline (~150 MB `base`, ~500 MB `small`) |
-| 5. 🗣️ | **Descarga voz Piper** — voz neuronal en español/inglés opcional (~30 MB) |
-| 6. 🔐 | **Permisos** — configura modo de seguridad (`auto` / `ask` / `deny`) y palabras de activación |
-| 7. 📝 | **Crea configuración** — genera `.env` + `config.yaml` listos para usar |
-| 8. 🪟 | **Servicio Windows** — opcional: instala Sentinel como servicio que arranca solo al iniciar sesión |
+| Acción | Cómo |
+|--------|------|
+| **Push-to-talk** | Pulsa **F9**, habla, suelta. El agente responde y auto-escucha 4s. |
+| **Modo chat** | `python main.py chat` |
+| **Servicio en segundo plano** | `start_sentinel.bat` — sin consola, arranca con el SO |
+| **Listar sesiones** | `python main.py --list-sessions` |
+| **Listar audio** | `python main.py --list-audio` |
 
-### 🚀 Después de instalar
+### Pipeline de Voz (100% Local)
 
-```bash
-start_sentinel.bat        # Windows — arranca inmediatamente
-```
+| Etapa | Motor |
+|-------|-------|
+| Voz a Texto | Whisper (`small` recomendado) |
+| Texto a Voz | Piper / pyttsx3 / Edge |
+| Captura de audio | sounddevice |
 
-O si instalaste el servicio — se lanza automáticamente cada vez que inicias sesión. **No necesitas volver a abrir un terminal nunca más.**
+### Funcionalidades de Accesibilidad
 
-> 🏠 **Voz 100% local.** Whisper para reconocimiento, Piper/pyttsx3 para habla.  
-> Sin APIs de voz en la nube. Solo el LLM necesita internet — o nada si usas Ollama local.
+| Funcionalidad | Descripción |
+|---------------|-------------|
+| **Control por voz** | Manejo completo del PC sin teclado ni ratón |
+| **Sonidos de estado** | Beep al escuchar, doble chime al terminar |
+| **Indicador visual** | Barra superior derecha con estado y texto |
+| **Perfiles de usuario** | `child`, `standard`, `expert` |
+| **Modo conversación** | Auto-escucha 4s tras cada respuesta |
+| **Lectura de pantalla** | "¿Qué hay en pantalla?" |
+| **Workflows guiados** | Email, búsquedas, clima, archivos |
+| **Limpieza de voz** | Sin emojis ni markdown en TTS |
+| **Sesiones** | Guardar y restaurar conversaciones |
 
-### 📦 Instalación manual (alternativa)
+### Proveedores LLM
 
-```bash
-pip install -r requirements.txt
-# Copia .env.example a .env y añade tu API key
-# Personaliza config.yaml a tu gusto
-python main.py
-```
+DeepSeek, OpenAI, Anthropic, Ollama, Groq, Google, OpenRouter, MiniMax, OpenCode.
 
----
+### Servicio en Segundo Plano
 
-### 🪟 Servicio en Segundo Plano — Instala una vez, funciona siempre
+| SO | Instalar | Control |
+|----|---------|---------|
+| **Windows** | `powershell -File install_service.ps1` | `start_sentinel.bat` / `stop_sentinel.bat` |
+| **Linux** | `bash install_service.sh` | `systemctl --user start/stop sentinel` |
+| **macOS** | `bash install_service.sh` | `launchctl load/unload` |
 
-El instalador te ofrece configurar Sentinel como **servicio en segundo plano de Windows**. Si aceptas:
-
-- ✅ Sentinel arranca **automáticamente** cada vez que inicias sesión en Windows
-- ✅ Sin ventana de consola — solo un 🟢 **icono verde** en la bandeja del sistema
-- ✅ `F9` funciona **globalmente** desde cualquier aplicación
-- ✅ `Ctrl+Alt+Q` cierra el servicio cuando quieras
-- ✅ Las respuestas se escuchan por los altavoces
-
-| SO | Comando de instalación | Iniciar | Parar |
-|----|----------------------|---------|-------|
-| 🪟 **Windows** | `powershell -File install_service.ps1` | `start_sentinel.bat` o auto | `stop_sentinel.bat` o `Ctrl+Alt+Q` |
-| 🐧 **Linux** | `bash install_service.sh` | Auto (systemd) | `systemctl --user stop sentinel` |
-| 🍏 **macOS** | `bash install_service.sh` | Auto (launchd) | `launchctl unload ~/Library/LaunchAgents/com.sentinel.agent.plist` |
-
-> 💡 **Truco:** Puedes instalar el servicio más tarde ejecutando el comando de arriba, o volviendo a lanzar `python install.py` y diciendo "Sí" a la pregunta del servicio.
-
----
-
-### 🎮 Uso
-
-```bash
-python main.py                 # 🎤 Modo voz (push-to-talk)
-python main.py chat            # 💬 Modo chat por texto
-python main.py --help          # 📋 Ver todas las opciones
-python main.py --list-audio    # 🎧 Listar dispositivos de audio
-python main.py --list-sessions # 📂 Ver sesiones guardadas
-```
-
-#### 🎤 Push-to-Talk
-
-| Tecla | Acción |
-|-------|--------|
-| `F9` | Mantén pulsado para grabar, suelta para enviar (configurable) |
-| `Ctrl+Alt+Q` | Salir de Sentinel |
-
-**Cómo funciona:** Mantén pulsado `F9` → habla tu comando → suelta → Sentinel procesa y responde por voz.
-
-#### 💬 Comandos del chat
-
-| Comando | Descripción |
-|---------|-------------|
-| `/exit` | 🚪 Salir |
-| `/voice` | 🎤 Cambiar a modo voz |
-| `/provider` | 🧠 Ver proveedor LLM actual |
-| `/mode ask\|auto\|deny` | 🔐 Cambiar modo de permisos |
-| `/sessions` | 📂 Listar sesiones guardadas |
-| `/help` | ❓ Mostrar ayuda |
-
----
-
-### 🗣️ Pipeline de Voz (100% Local)
-
-| Componente | Motor | Detalles |
-|-----------|-------|----------|
-| 🎯 Activación | Whisper `tiny` | Rápido, pocos recursos |
-| 🎤 Voz → Texto | Whisper `base`/`small` | Offline, multi-idioma |
-| 🔊 Texto → Voz | pyttsx3 / Piper / Edge | TTS neuronal sin internet |
-
----
-
-### ⚙️ Configuración (`config.yaml`)
-
-```yaml
-llm:
-  provider: deepseek              # openai, anthropic, ollama, groq, google, openrouter
-  model: deepseek-v4-flash
-  temperature: 0.4
-
-voice:
-  input_device: null              # null = micrófono por defecto
-  output_device: null             # null = altavoces por defecto
-  stt:
-    engine: whisper
-    language: es                  # en, es, fr, de...
-    model: small                  # tiny / base / small / medium / large
-  tts:
-    engine: piper                 # pyttsx3, piper, edge
-    piper:
-      model_path: "models/piper/es_ES-carlfm-x_low/es_ES-carlfm-x_low.onnx"
-  activation: pushtotalk          # wakeword, pushtotalk, always
-  wake_words: [sentinel]
-  push_to_talk_key: f9
-  quit_key: ctrl+alt+q
-
-safety:
-  default_mode: auto              # ask → pedir permiso | auto → confiar | deny → bloquear
-  permissions:
-    terminal:
-      blocked_commands: [rm -rf /, format, diskpart]
-    files:
-      blocked_paths: [C:\Windows, /etc, /boot]
-  high_risk_patterns: [delete, remove, shutdown, kill]
-
-desktop:
-  screenshot_quality: 80
-  mouse_speed: 0.3
-
-logging:
-  level: INFO
-```
-
----
-
-### 🧰 Capacidades — Lo que Sentinel puede hacer por ti
-
-| 🛠️ Herramienta | 📝 Descripción | 💬 Ejemplo |
-|----------------|---------------|-----------|
-| `terminal_execute` | Ejecutar comandos | *"Instala requests con pip"* |
-| `desktop_screenshot` | Captura de pantalla | *"Muéstrame lo que hay en pantalla"* |
-| `desktop_click` | Clic en coordenadas | *"Haz clic en el botón Inicio"* |
-| `desktop_type` | Escribir texto | *"Escribe Hola Mundo en el Bloc de notas"* |
-| `desktop_move_mouse` | Mover cursor | *"Mueve el ratón al centro"* |
-| `desktop_press_key` | Pulsar tecla | *"Pulsa Enter"* |
-| `desktop_hotkey` | Combinación | *"Pulsa Alt+Tab"* |
-| `file_read` | Leer archivo | *"Léeme el archivo README"* |
-| `file_write` | Escribir archivo | *"Guarda 'hola' en notas.txt"* |
-| `file_list` | Listar directorio | *"Qué hay en el escritorio?"* |
-| `file_delete` | Borrar archivo | *"Borra temp.txt"* |
-| `process_list` | Listar procesos | *"Qué programas están abiertos?"* |
-| `process_kill` | Matar proceso | *"Cierra Chrome"* |
-| `system_info` | CPU, RAM, disco | *"Cómo va el sistema?"* |
-| `window_list` | Ventanas abiertas | *"Qué ventanas tengo?"* |
-| `window_focus` | Cambiar ventana | *"Ve al Bloc de notas"* |
-| `window_minimize` | Minimizar | *"Minimiza esta ventana"* |
-| `session_list` | Historial | *"Muéstrame mis sesiones"* |
-| `session_load` | Restaurar | *"Restaura mi última sesión"* |
-
----
-
-### 📚 Base de Conocimiento
-
-Sentinel carga conocimiento específico para tu SO desde `knowledge/*.md` — solo los archivos relevantes, ahorrando tokens.
-
-```
-knowledge/
-  01-identity.md           Identidad del agente
-  02-opening-apps.md       Cómo se abren aplicaciones
-  03-windows.md            Administración de Windows
-  04-linux.md              Administración de Linux
-  05-macos.md              Administración de macOS
-  06-cross-platform.md     Referencia multi-OS
-  07-sessions.md           Gestión de sesiones
-  08-efficiency.md         Optimización de rendimiento
-```
-
-Edita o añade `.md` para enseñarle cosas nuevas — **sin tocar código**.
-
----
-
-### 💾 Sesiones
-
-- Cada ejecución crea una sesión con timestamp
-- Se guarda automáticamente al salir en `sessions/`
-- 🎤 *"Restaura mi última sesión"* → continúa donde lo dejaste
-- 💬 `/sessions` lista todas las sesiones
-- Historial recortado a 12 mensajes para ahorrar tokens
-
----
-
-### ⚡ Optimización de Tokens
-
-| Técnica | Ahorro |
-|---------|--------|
-| Recorte de historial (12 msgs) | ~60% menos tokens |
-| Conocimiento por SO | ~40% menos tokens |
-| Caching de Anthropic | Reutiliza system prompt |
-| Limpieza TTS | Elimina emojis y formato |
-
----
-
-### 🔌 Proveedores LLM
-
-| Proveedor | API Key | Destaca por |
-|-----------|---------|------------|
-| 🧠 **DeepSeek** | `DEEPSEEK_API_KEY` | Recomendado — rápido y económico |
-| 🤖 OpenAI | `OPENAI_API_KEY` | GPT-4o, GPT-4 |
-| 🎓 Anthropic | `ANTHROPIC_API_KEY` | Claude + prompt caching |
-| 🏠 **Ollama** | *Ninguna* | 100% local, sin internet |
-| ⚡ Groq | `GROQ_API_KEY` | Inferencia ultrarrápida |
-| 🌐 Google | `GOOGLE_API_KEY` | Modelos Gemini |
-| 🔀 OpenRouter | `OPENROUTER_API_KEY` | Acceso a +200 modelos |
-| 🎯 MiniMax | `MINIMAX_API_KEY` | Alternativa económica |
-| 💻 OpenCode | `OPENCODE_API_KEY` | API especializada en código |
-
----
-
-### 🩺 Solución de Problemas
-
-| Problema | Solución |
-|----------|----------|
-| 🎤 No captura el micro | `python main.py --list-audio` → configura `input_device` |
-| 🔊 No se oye nada | Revisa `output_device` o usa los de Windows por defecto |
-| ⬇️ Descarga Whisper | Auto-descarga en primer uso (~150-500 MB). Pre-descarga con `install.py` |
-| 🗣️ Voz Piper | Descarga `.onnx` de [Piper releases](https://github.com/rhasspy/piper/releases) |
-| 🔑 Errores API | Verifica la key en `.env`, usa `deepseek-v4-flash` (no `deepseek-chat`) |
-
----
-
-### 🗂️ Estructura del Proyecto
-
-```
-sentinel/
-├── main.py                    # 🚀 Entrada + CLI
-├── install.py                 # 📦 Instalador interactivo
-├── sentinel_service.py        # 🪟 Servicio en segundo plano
-├── sentinelw.pyw              # 🪟 Lanzador sin consola
-├── config.yaml                # ⚙️ Configuración
-├── requirements.txt           # 📋 Dependencias
-├── knowledge/                 # 📚 Conocimiento del agente (.md)
-├── sentinel/
-│   ├── core.py                # 🔄 Bucle principal, herramientas
-│   ├── config.py              # 📄 Cargador YAML + .env
-│   ├── sessions.py            # 💾 Gestor de sesiones
-│   ├── agent/
-│   │   ├── llm.py             # 🧠 Motor LLM, carga de conocimiento
-│   │   └── prompts.py         # 💬 Constructor de system prompt
-│   ├── actions/
-│   │   ├── terminal.py        # ⌨️ Terminal y lanzador de apps
-│   │   ├── desktop.py         # 🖱️ Ratón, teclado, capturas
-│   │   ├── files.py           # 📁 Operaciones con archivos
-│   │   ├── processes.py       # 📊 Gestión de procesos
-│   │   └── windows.py         # 🪟 Gestión de ventanas
-│   ├── providers/             # 🔌 OpenAI, Anthropic, DeepSeek, Ollama...
-│   ├── safety/
-│   │   ├── permissions.py     # 🔐 Gestor de permisos
-│   │   └── sandbox.py         # 🏖️ Sandbox de ejecución
-│   ├── voice/
-│   │   ├── wakeword.py        # 🎯 Detección de activación
-│   │   ├── stt.py             # 🎤 Voz a texto (Whisper)
-│   │   └── tts.py             # 🔊 Texto a voz
-│   └── ui/
-│       └── indicator.py       # 🟢 Indicador en bandeja del sistema
-```
+Sin ventana de consola. F9 para hablar desde cualquier aplicación. Ctrl+Alt+Q para salir.

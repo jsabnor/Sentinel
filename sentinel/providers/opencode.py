@@ -1,4 +1,3 @@
-import json
 import logging
 
 from sentinel.providers.base import BaseProvider
