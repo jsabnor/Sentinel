@@ -40,6 +40,7 @@ class SentinelAgent:
 
         self.session = SessionManager()
         self.session.start_new()
+        self._total_tokens = 0
 
         self.llm = LLMEngine(config.get("llm", {}))
         self.terminal = TerminalController(config.get("sandbox", {}))
@@ -547,8 +548,9 @@ class SentinelAgent:
             return "Lo siento, ha ocurrido un error. He reiniciado la conversacion. Puedes repetir tu ultima peticion?"
 
     def _process_with_tools(self):
-        self._trim_history(max_messages=12)
+        self._trim_history(max_messages=8)
         response = self.llm.chat(self.conversation_history, tools=self._get_tool_definitions(), profile=self._profile)
+        self._count_tokens(response)
 
         tool_iterations = 0
         max_iterations = 12
@@ -604,12 +606,26 @@ class SentinelAgent:
                 })
 
             response = self.llm.chat(self.conversation_history, tools=self._get_tool_definitions(), profile=self._profile)
+            self._count_tokens(response)
 
         reply = response.get("content", "")
         self.conversation_history.append({"role": "assistant", "content": reply})
         self._trim_history()
         log.info("Sentinel: %s", reply)
         return reply
+
+    def _count_tokens(self, response):
+        try:
+            content = response.get("content", "")
+            self._total_tokens += max(len(content) // 4, 1)
+            tokens_str = self._total_tokens
+            if tokens_str >= 1000:
+                label = f"{tokens_str/1000:.1f}K" if tokens_str < 10000 else f"{tokens_str//1000}K"
+            else:
+                label = str(tokens_str)
+            self.indicator.set_tokens(label)
+        except Exception:
+            pass
 
     def _trim_history(self, max_messages: int = 12):
         if len(self.conversation_history) <= max_messages:

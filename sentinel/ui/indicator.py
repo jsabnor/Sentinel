@@ -62,6 +62,9 @@ class StatusIndicator:
             state = "hidden"
         self._state = state
 
+    def set_tokens(self, label: str):
+        self._tokens_label = label
+
     @property
     def state(self):
         return self._state
@@ -101,6 +104,13 @@ class StatusIndicator:
                 anchor="w",
             )
 
+            self._tokens_text = self._canvas.create_text(
+                pad + radio * 2 + 115, cy,
+                text="", fill="#666666",
+                font=("Segoe UI", 9),
+                anchor="e",
+            )
+
             self._position_window()
 
         except Exception as e:
@@ -134,6 +144,9 @@ class StatusIndicator:
                         self._window.attributes("-alpha", alpha)
 
                     last_state = current_state
+
+                tokens_label = getattr(self, "_tokens_label", "")
+                self._canvas.itemconfig(self._tokens_text, text=tokens_label if tokens_label else "", fill="#777777")
 
                 if current_state == "listening":
                     import math
