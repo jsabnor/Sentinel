@@ -62,6 +62,7 @@ class SentinelAgent:
             self._ptt_key = voice_cfg.get("push_to_talk_key", "ctrl+alt+s")
             self._profile = voice_cfg.get("profile", "standard")
             self._conv_timeout = voice_cfg.get("conversation_timeout", 0)
+            self._max_history = voice_cfg.get("max_history", 4)
         else:
             self.stt = None
             self.tts = None
@@ -69,6 +70,7 @@ class SentinelAgent:
             self._activation = "always"
             self._ptt_key = None
             self._conv_timeout = 0
+            self._max_history = 4
 
         self._register_tools()
 
@@ -548,7 +550,7 @@ class SentinelAgent:
             return "Lo siento, ha ocurrido un error. He reiniciado la conversacion. Puedes repetir tu ultima peticion?"
 
     def _process_with_tools(self):
-        self._trim_history(max_messages=4)
+        self._trim_history(max_messages=self._max_history)
         response = self.llm.chat(self.conversation_history, tools=self._get_tool_definitions(), profile=self._profile)
         self._count_tokens(response)
 
@@ -627,7 +629,7 @@ class SentinelAgent:
         except Exception:
             pass
 
-    def _trim_history(self, max_messages: int = 4):
+    def _trim_history(self, max_messages: int = None):
         if len(self.conversation_history) <= max_messages:
             return
 
