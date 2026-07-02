@@ -548,12 +548,12 @@ class SentinelAgent:
             return "Lo siento, ha ocurrido un error. He reiniciado la conversacion. Puedes repetir tu ultima peticion?"
 
     def _process_with_tools(self):
-        self._trim_history(max_messages=8)
+        self._trim_history(max_messages=4)
         response = self.llm.chat(self.conversation_history, tools=self._get_tool_definitions(), profile=self._profile)
         self._count_tokens(response)
 
         tool_iterations = 0
-        max_iterations = 12
+        max_iterations = 8
         last_content = ""
 
         while response.get("tool_calls"):
@@ -627,7 +627,7 @@ class SentinelAgent:
         except Exception:
             pass
 
-    def _trim_history(self, max_messages: int = 12):
+    def _trim_history(self, max_messages: int = 4):
         if len(self.conversation_history) <= max_messages:
             return
 
