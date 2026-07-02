@@ -542,13 +542,17 @@ class SentinelAgent:
             log.error("LLM error: %s", error_msg)
 
             if "400" in error_msg or "context" in error_msg.lower() or "token" in error_msg.lower():
-                self.conversation_history = self.conversation_history[-4:]
+                self.conversation_history = self.conversation_history[-8:]
+                while self.conversation_history and self.conversation_history[0]["role"] != "user":
+                    self.conversation_history.pop(0)
                 try:
                     return self._process_with_tools()
                 except Exception:
                     pass
 
             self.conversation_history = self.conversation_history[-2:]
+            while self.conversation_history and self.conversation_history[0]["role"] != "user":
+                self.conversation_history.pop(0)
             return "Lo siento, ha ocurrido un error. He reiniciado la conversacion. Puedes repetir tu ultima peticion?"
 
     def _process_with_tools(self):
@@ -632,15 +636,20 @@ class SentinelAgent:
             pass
 
     def _trim_history(self, max_messages: int = None):
+        if max_messages is None:
+            return
         if len(self.conversation_history) <= max_messages:
             return
 
         for i in range(len(self.conversation_history) - max_messages, len(self.conversation_history)):
             if self.conversation_history[i]["role"] == "user":
                 self.conversation_history = self.conversation_history[i:]
-                return
+                break
+        else:
+            self.conversation_history = self.conversation_history[-max_messages:]
 
-        self.conversation_history = self.conversation_history[-max_messages:]
+        while self.conversation_history and self.conversation_history[0]["role"] == "tool":
+            self.conversation_history.pop(0)
 
     def _get_tool_definitions(self):
         return [
