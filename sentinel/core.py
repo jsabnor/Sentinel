@@ -551,15 +551,22 @@ class SentinelAgent:
         response = self.llm.chat(self.conversation_history, tools=self._get_tool_definitions(), profile=self._profile)
 
         tool_iterations = 0
-        max_iterations = 8
+        max_iterations = 12
+        last_content = ""
 
         while response.get("tool_calls"):
             if tool_iterations >= max_iterations:
                 log.warning("Max tool iterations (%d), forcing response", max_iterations)
-                response = {"role": "assistant", "content": "Lo siento, esto esta tardando mas de lo esperado. Puedes repetirme que necesitas?"}
+                if last_content:
+                    response = {"role": "assistant", "content": last_content}
+                else:
+                    response = {"role": "assistant", "content": "He encontrado informacion pero necesito que seas mas especifico. Puedes concretar que necesitas?"}
                 break
 
             tool_iterations += 1
+            if response.get("content"):
+                last_content = response["content"]
+
             tool_results = []
             for call in response["tool_calls"]:
                 func = call.get("function", call)
@@ -576,11 +583,11 @@ class SentinelAgent:
                     result = handler(**args)
                     tool_results.append({
                         "name": name,
-                        "result": str(result),
+                        "result": str(result)[:2000],
                         "call_id": call.get("id", "call"),
                     })
                     try:
-                        print(f"  [{name}] {str(result)[:200]}")
+                        print(f"  [{name}] {str(result)[:120]}")
                     except Exception:
                         pass
 

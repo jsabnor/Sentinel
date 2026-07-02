@@ -50,3 +50,15 @@ systeminfo | findstr /C:"OS" /C:"Memory" /C:"Processor"
 - After 2 failed attempts with the same tool, try a DIFFERENT approach
 - If 3 different approaches fail, tell the user what you tried and ask for guidance
 - Don't loop. Don't retry the same failing command.
+
+## Handling Web Content
+- NEVER fetch entire web pages with curl. Use `curl -s URL | head -100` to limit output.
+- Use specific URLs (news sites, weather APIs) not generic searches.
+- For news, use a specific news site URL and grep for relevant headlines.
+- For weather, use `wttr.in` with specific format parameters.
+- Tool results are truncated at 2000 characters. Keep your queries specific.
+
+## When You Don't Know
+- If you genuinely can't find information, say so honestly.
+- Suggest what you CAN do instead.
+- Don't keep trying the same approach. Be creative but efficient.
