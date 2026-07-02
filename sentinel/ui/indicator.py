@@ -82,7 +82,7 @@ class StatusIndicator:
 
             radio = self._size / 2
             pad = 6
-            w = int(radio * 2 + 160 + pad * 3)
+            w = int(radio * 2 + 210 + pad * 3)
             h = int(radio * 2 + pad * 2)
 
             self._canvas = tk.Canvas(
@@ -91,26 +91,26 @@ class StatusIndicator:
             )
             self._canvas.pack()
 
-            cx = pad + radio
+            cx = pad + radio + 55
             cy = pad + radio
 
             self._circle = self._canvas.create_oval(
-                pad, pad, pad + int(radio * 2), pad + int(radio * 2),
+                cx - radio, pad, cx + radio, pad + int(radio * 2),
                 fill=STATES["sleep"]["color"], outline="",
             )
 
             self._status_text = self._canvas.create_text(
-                pad + radio * 2 + 10, cy,
+                cx + radio + 8, cy,
                 text="", fill="#888888",
                 font=("Segoe UI", 10, "bold"),
                 anchor="w",
             )
 
             self._tokens_text = self._canvas.create_text(
-                pad + radio * 2 + 115, cy,
+                pad + 4, cy,
                 text="", fill="#00cc44",
                 font=("Segoe UI", 9, "bold"),
-                anchor="e",
+                anchor="w",
             )
 
             self._position_window()
@@ -180,7 +180,7 @@ class StatusIndicator:
             return
         screen_w = self._window.winfo_screenwidth()
         radio = self._size / 2
-        w = int(radio * 2 + 160 + 18)
+        w = int(radio * 2 + 210 + 18)
         h = int(radio * 2 + 12)
         x = screen_w - w - self._margin_x
         y = self._margin_y
