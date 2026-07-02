@@ -581,9 +581,13 @@ class SentinelAgent:
                 handler = _TOOL_HANDLERS.get(name)
                 if handler:
                     result = handler(**args)
+                    result_str = str(result)
+                    if len(result_str) > 5000:
+                        half = 2500
+                        result_str = result_str[:half] + f"\n[... {len(result_str) - 2*half} chars omitted ...]\n" + result_str[-half:]
                     tool_results.append({
                         "name": name,
-                        "result": str(result)[:2000],
+                        "result": result_str,
                         "call_id": call.get("id", "call"),
                     })
                     try:
