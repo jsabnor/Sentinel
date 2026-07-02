@@ -5,9 +5,9 @@
 
 llm:
   provider: deepseek
-  model: deepseek-chat
-  temperature: 0.4
-  max_tokens: 4096
+  model: deepseek-v4-flash
+  temperature: 0.2
+  max_tokens: 1024             # Max response tokens (lower = less cost, 512-4096)
   api_key: ${DEEPSEEK_API_KEY}
   base_url: null
 
@@ -75,6 +75,7 @@ voice:
   quit_key: ctrl+alt+q
   conversation_timeout: 0       # 0 = disabled, auto-listen after response wastes tokens
   max_history: 4                 # Max conversation messages to keep (2-12, lower = less tokens)
+  max_tool_calls: 6              # Max tool calls per request (3-8, lower = less tokens)
 
 safety:
   default_mode: auto

@@ -63,6 +63,7 @@ class SentinelAgent:
             self._profile = voice_cfg.get("profile", "standard")
             self._conv_timeout = voice_cfg.get("conversation_timeout", 0)
             self._max_history = voice_cfg.get("max_history", 4)
+            self._max_tool_calls = voice_cfg.get("max_tool_calls", 6)
         else:
             self.stt = None
             self.tts = None
@@ -71,6 +72,7 @@ class SentinelAgent:
             self._ptt_key = None
             self._conv_timeout = 0
             self._max_history = 4
+            self._max_tool_calls = 6
 
         self._register_tools()
 
@@ -555,7 +557,7 @@ class SentinelAgent:
         self._count_tokens(response)
 
         tool_iterations = 0
-        max_iterations = 8
+        max_iterations = self._max_tool_calls
         last_content = ""
 
         while response.get("tool_calls"):
