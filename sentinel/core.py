@@ -62,8 +62,8 @@ class SentinelAgent:
             self._ptt_key = voice_cfg.get("push_to_talk_key", "ctrl+alt+s")
             self._profile = voice_cfg.get("profile", "standard")
             self._conv_timeout = voice_cfg.get("conversation_timeout", 0)
-            self._max_history = voice_cfg.get("max_history", 4)
-            self._max_tool_calls = voice_cfg.get("max_tool_calls", 6)
+            self._max_history = voice_cfg.get("max_history", 6)
+            self._max_tool_calls = voice_cfg.get("max_tool_calls", 8)
         else:
             self.stt = None
             self.tts = None
@@ -71,8 +71,8 @@ class SentinelAgent:
             self._activation = "always"
             self._ptt_key = None
             self._conv_timeout = 0
-            self._max_history = 4
-            self._max_tool_calls = 6
+            self._max_history = 6
+            self._max_tool_calls = 8
 
         self._register_tools()
 

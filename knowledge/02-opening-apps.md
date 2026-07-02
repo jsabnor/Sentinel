@@ -31,7 +31,9 @@ Use the direct executable path. The system automatically handles non-blocking la
   - Re-open if the user closes it
   - Monitor or watch applications
 
-## Important
-- Use PLAIN commands for everything except the final app launch.
-- Do NOT use "start" for: where, dir, echo, if exist, cmd, tasklist, find, findstr.
-- Only the final exe path triggers the automatic background launch.
+## Important: Match App to Request
+- "Play music" / "reproduce X" / "pon X" → Spotify or media player, NOT browser
+- "Search the web" / "busca X" → browser (Edge/Chrome)
+- "Open YouTube" → browser to youtube.com
+- "Play X on Spotify" → find Spotify.exe, launch it, then trust Spotify to handle search. Do NOT open browser.
+- If user says "Spotify", ALWAYS use Spotify, never fallback to YouTube or browser.
