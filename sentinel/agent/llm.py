@@ -145,3 +145,6 @@ class LLMEngine:
         if response.get("tool_calls"):
             result["tool_calls"] = response["tool_calls"]
         return result
+
+    def _full_prompt_text(self) -> str:
+        return _FULL_SYSTEM_PROMPT

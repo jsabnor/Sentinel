@@ -624,13 +624,24 @@ class SentinelAgent:
 
     def _count_tokens(self, response):
         try:
-            content = response.get("content", "")
-            self._total_tokens += max(len(content) // 4, 1)
-            tokens_str = self._total_tokens
-            if tokens_str >= 1000:
-                label = f"{tokens_str/1000:.1f}K" if tokens_str < 10000 else f"{tokens_str//1000}K"
+            if not hasattr(self, "_tokens_counted"):
+                self._total_tokens += 6000 // 3   # system prompt (once)
+                self._total_tokens += 4500 // 3   # tool definitions (once)
+                self._tokens_counted = True
+
+            # Input: conversation history
+            input_chars = sum(len(str(m.get("content", ""))) for m in self.conversation_history[-4:])
+            self._total_tokens += (input_chars // 3)
+
+            # Output: assistant response
+            output = response.get("content", "")
+            self._total_tokens += max(len(output) // 3, 1)
+
+            tokens = self._total_tokens
+            if tokens >= 1000:
+                label = f"{tokens/1000:.1f}K" if tokens < 10000 else f"{tokens//1000}K"
             else:
-                label = str(tokens_str)
+                label = str(tokens)
             self.indicator.set_tokens(label)
         except Exception:
             pass
