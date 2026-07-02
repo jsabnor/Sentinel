@@ -63,6 +63,8 @@ class StatusIndicator:
         self._state = state
 
     def set_tokens(self, label: str):
+        if label != getattr(self, "_tokens_label", ""):
+            self._tokens_flash = 8
         self._tokens_label = label
 
     @property
@@ -106,8 +108,8 @@ class StatusIndicator:
 
             self._tokens_text = self._canvas.create_text(
                 pad + radio * 2 + 115, cy,
-                text="", fill="#666666",
-                font=("Segoe UI", 9),
+                text="", fill="#00cc44",
+                font=("Segoe UI", 9, "bold"),
                 anchor="e",
             )
 
@@ -133,6 +135,7 @@ class StatusIndicator:
                     if current_state == "hidden":
                         self._canvas.itemconfig(self._circle, fill="#232323")
                         self._canvas.itemconfig(self._status_text, text="", fill="#555555")
+                        self._canvas.itemconfig(self._tokens_text, text="")
                         self._window.attributes("-alpha", 0.18)
                     elif current_state == "listening":
                         self._canvas.itemconfig(self._circle, fill=color)
@@ -146,7 +149,13 @@ class StatusIndicator:
                     last_state = current_state
 
                 tokens_label = getattr(self, "_tokens_label", "")
-                self._canvas.itemconfig(self._tokens_text, text=tokens_label if tokens_label else "", fill="#777777")
+                flash = getattr(self, "_tokens_flash", 0)
+                if flash > 0:
+                    self._tokens_flash = flash - 1
+                    color = "#ff2222" if flash > 3 else "#00cc44"
+                else:
+                    color = "#00cc44"
+                self._canvas.itemconfig(self._tokens_text, text=tokens_label, fill=color)
 
                 if current_state == "listening":
                     import math
